@@ -1,6 +1,7 @@
 package com.projects.springsecuritydemo.services.impl;
 
 import com.projects.springsecuritydemo.dto.JwtAuthenticationResponse;
+import com.projects.springsecuritydemo.dto.RefreshTokenRequest;
 import com.projects.springsecuritydemo.dto.SignInRequest;
 import com.projects.springsecuritydemo.dto.SignUpRequest;
 import com.projects.springsecuritydemo.entities.Role;
@@ -65,6 +66,32 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         jwtAuthenticationResponse.setRefreshToken(refreshToken);
 
         return jwtAuthenticationResponse;
+
+    }
+
+
+
+
+    public JwtAuthenticationResponse refreshToken(RefreshTokenRequest refreshTokenRequest){
+
+        String userEmail = jwtService.extractUserName(refreshTokenRequest.getToken());
+
+        User user = userRepository.findByEmail(userEmail).orElseThrow();
+
+        if(jwtService.isTokenValid(refreshTokenRequest.getToken(), user)){
+            //generates a new token
+            var jwt = jwtService.generateToken(user);
+
+            JwtAuthenticationResponse jwtAuthenticationResponse =
+                    new JwtAuthenticationResponse();
+
+            jwtAuthenticationResponse.setToken(jwt);
+            jwtAuthenticationResponse.setRefreshToken(refreshTokenRequest.getToken());
+
+            return jwtAuthenticationResponse;
+        }
+
+        return null;
 
     }
 }
