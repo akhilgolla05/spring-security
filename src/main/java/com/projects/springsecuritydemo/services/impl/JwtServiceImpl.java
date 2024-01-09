@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 
 @Service
@@ -20,10 +22,22 @@ public class JwtServiceImpl implements JwtService {
     public String generateToken(UserDetails userDetails){
         return Jwts.builder().setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 + 60 + 24))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 + 60 + 24)) // 1day
                 .signWith(getSignKey(), SignatureAlgorithm.HS256)
                 .compact();
 
+    }
+
+
+    //generating refresh Token
+
+    public String generateRefreshToken(HashMap<String, Object> extraClaims, UserDetails userDetails) {
+
+        return Jwts.builder().setClaims(extraClaims).setSubject(userDetails.getUsername())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + 604800000)) // 7 days
+                .signWith(getSignKey(), SignatureAlgorithm.HS256)
+                .compact();
     }
 
     //This Method Will Return a Key
@@ -64,6 +78,9 @@ public class JwtServiceImpl implements JwtService {
         final String username = extractUserName(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
+
+
+
 
     private boolean isTokenExpired(String token) {
 

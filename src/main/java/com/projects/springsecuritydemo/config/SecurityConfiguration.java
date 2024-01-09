@@ -66,10 +66,15 @@ public class SecurityConfiguration {
         return new BCryptPasswordEncoder();
     }
 
+
     //need to create method for Authentication Manager
+    @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
+
+
+
 
 
 }
