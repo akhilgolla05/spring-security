@@ -40,7 +40,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/api/v1/user").hasAuthority(Role.USER.name())
                         .anyRequest().authenticated())
 
-                        //nned to disable the session Management
+                        //need to disable the session Management
                 .sessionManagement(manger->manger.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 //we need to mention the authentication provider i.e., we need to give authentication provider to spring security.
